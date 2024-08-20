@@ -8,7 +8,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/milindtheengineer/charge-maps-server/config"
-	"github.com/milindtheengineer/charge-maps-server/database"
+	"github.com/milindtheengineer/charge-maps-server/geodata"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
@@ -27,26 +27,21 @@ func StartRouter() {
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 
-	// Shift this logic to main probably
-	db, err := database.CreateDBConnection(config.AppConfig.DBPath)
+	logger := zerolog.New(os.Stdout).With().Timestamp().Logger()
+
+	syncRtreeMap, err := geodata.FetchData(config.AppConfig.GeoJSONFilePath)
 	if err != nil {
-		panic(err)
+		logger.Panic().Msgf("screwed due to %v", err)
 	}
 	app := App{
-		db:     db,
-		logger: zerolog.New(os.Stdout).With().Timestamp().Logger(),
+		logger: logger,
+		geoMap: syncRtreeMap,
 	}
 	r.Get("/health", HealthHandler)
 	r.Post("/login", app.HandleLogin)
 	r.Group(func(r chi.Router) {
-		r.Use(app.authMiddleware)
-		// r.Get("/sessions", app.SessionListHandler)
-		// r.Get("/workouts/{sessionID}", app.WorkoutListHandler)
-		// r.Get("/sets/{workoutID}", app.SetListHandler)
-		// r.Get("/lastworkout/{workout}", app.LastWorkoutHandler)
-		// r.Post("/sessions", app.SessionCreateHandler)
-		// r.Post("/workouts", app.WorkoutCreateHandler)
-		// r.Post("/sets", app.SetCreateHandler)
+		// r.Use(app.authMiddleware)
+		r.Post("/locations", app.LocationHanlder)
 	})
 
 	// r.GET("/v1/user", authMiddleware(user.Crud))
