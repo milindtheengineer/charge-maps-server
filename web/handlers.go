@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/milindtheengineer/charge-maps-server/database"
 	"github.com/milindtheengineer/charge-maps-server/geodata"
 	"github.com/rs/zerolog"
@@ -21,13 +22,14 @@ func HealthHandler(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) LocationHanlder(w http.ResponseWriter, r *http.Request) {
 	var bbox geodata.Bbox
+	locationID := chi.URLParam(r, "locationID")
 	if err := json.NewDecoder(r.Body).Decode(&bbox); err != nil {
 		a.logger.Error().Msgf("LocationHanlder: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	data := []geodata.LocationData{}
-	targetData, err := a.geoMap["target"].SearchPoint(bbox)
+	targetData, err := a.geoMap[locationID].SearchPoint(bbox)
 	if err != nil {
 		a.logger.Error().Msgf("LocationHanlder: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)

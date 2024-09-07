@@ -1,4 +1,4 @@
 vendor/
 config.env
 charge-maps-server
-target-stores.json
+*.json

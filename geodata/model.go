@@ -9,6 +9,48 @@ type Bbox struct {
 	MaxLon string
 }
 
+type Supercharger struct {
+	ID         int    `json:"id"`
+	LocationID string `json:"locationId"`
+	Name       string `json:"name"`
+	Status     string `json:"status"`
+	Address    struct {
+		Street    string `json:"street"`
+		City      string `json:"city"`
+		State     string `json:"state"`
+		Zip       string `json:"zip"`
+		CountryID int    `json:"countryId"`
+		Country   string `json:"country"`
+		RegionID  int    `json:"regionId"`
+		Region    string `json:"region"`
+	} `json:"address"`
+	Gps struct {
+		Latitude  float64 `json:"latitude"`
+		Longitude float64 `json:"longitude"`
+	} `json:"gps"`
+	DateOpened      string `json:"dateOpened"`
+	StallCount      int    `json:"stallCount"`
+	Counted         bool   `json:"counted"`
+	ElevationMeters int    `json:"elevationMeters"`
+	PowerKilowatt   int    `json:"powerKilowatt"`
+	SolarCanopy     bool   `json:"solarCanopy"`
+	Battery         bool   `json:"battery"`
+	OtherEVs        bool   `json:"otherEVs"`
+	StatusDays      int    `json:"statusDays"`
+	URLDiscuss      bool   `json:"urlDiscuss"`
+	Stalls          struct {
+		V3 int `json:"v3"`
+	} `json:"stalls"`
+	Plugs struct {
+		Tpc  int `json:"tpc"`
+		Nacs int `json:"nacs"`
+	} `json:"plugs"`
+	ParkingID    int    `json:"parkingId"`
+	FacilityName string `json:"facilityName"`
+	PlugshareID  int    `json:"plugshareId"`
+	OsmID        int64  `json:"osmId"`
+}
+
 type LocationData struct {
 	Name string
 	Lat  float64

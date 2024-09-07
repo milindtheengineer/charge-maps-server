@@ -29,9 +29,21 @@ func StartRouter() {
 
 	logger := zerolog.New(os.Stdout).With().Timestamp().Logger()
 
-	syncRtreeMap, err := geodata.FetchData(config.AppConfig.GeoJSONFilePath)
+	syncRtreeMap := make(map[string]*geodata.SyncRTree)
+
+	logger.Info().Msgf("the data is %v", config.AppConfig.GeoJSONFilePath)
+
+	tree, err := geodata.FetchSuperchargerData(config.AppConfig.SuperchargerFilePath)
 	if err != nil {
 		logger.Panic().Msgf("screwed due to %v", err)
+	}
+	syncRtreeMap["supercharger"] = tree
+	for key, path := range config.AppConfig.GeoJSONFilePath {
+		tree, err := geodata.FetchData(path, key)
+		if err != nil {
+			logger.Panic().Msgf("screwed due to %v", err)
+		}
+		syncRtreeMap[key] = tree
 	}
 	app := App{
 		logger: logger,
@@ -41,7 +53,7 @@ func StartRouter() {
 	r.Post("/login", app.HandleLogin)
 	r.Group(func(r chi.Router) {
 		// r.Use(app.authMiddleware)
-		r.Post("/locations", app.LocationHanlder)
+		r.Post("/locations/{locationID}", app.LocationHanlder)
 	})
 
 	// r.GET("/v1/user", authMiddleware(user.Crud))
