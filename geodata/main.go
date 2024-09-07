@@ -42,8 +42,8 @@ func (s *SyncRTree) SearchPoint(bbox Bbox) ([]LocationData, error) {
 	return locationDataList, nil
 }
 
-func (s *SyncRTree) InsertPoint(lon float64, lat float64, name string, city string) {
+func (s *SyncRTree) InsertPoint(lon float64, lat float64, name string, address string, numberOfChargingStalls int, power int, website string, shortName string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.tr.Insert([2]float64{lon, lat}, [2]float64{lon, lat}, LocationData{Name: name, Lon: lon, Lat: lat, City: city})
+	s.tr.Insert([2]float64{lon, lat}, [2]float64{lon, lat}, LocationData{Name: name, Lon: lon, Lat: lat, Address: address, NumberOfChargingStalls: numberOfChargingStalls, Power: power, Website: website, ShortName: shortName})
 }

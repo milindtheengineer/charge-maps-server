@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 	"sync"
 
 	"github.com/tidwall/rtree"
@@ -25,7 +26,8 @@ func FetchSuperchargerData(dataFile string) (*SyncRTree, error) {
 		return syncRTree, fmt.Errorf("FetchData: %w", err)
 	}
 	for _, elem := range data {
-		syncRTree.InsertPoint(elem.Gps.Longitude, elem.Gps.Latitude, "supercharger", elem.Name)
+		address := elem.Address.Street + "\n" + elem.Address.City + " " + elem.Address.State + " " + elem.Address.Zip
+		syncRTree.InsertPoint(elem.Gps.Longitude, elem.Gps.Latitude, "Tesla Supercharger", strings.TrimSpace(address), elem.StallCount, elem.PowerKilowatt, "", "supercharger")
 	}
 	return syncRTree, nil
 }
@@ -47,9 +49,11 @@ func FetchData(dataFile string, key string) (*SyncRTree, error) {
 	}
 	for _, elem := range data.Elements {
 		if elem.Type == "node" {
-			syncRTree.InsertPoint(elem.Lon, elem.Lat, elem.Tags["name"], elem.Tags["addr:city"])
+			address := elem.Tags["addr:housenumber"] + " " + elem.Tags["addr:street"] + "\n" + elem.Tags["addr:state"] + " " + elem.Tags["addr:postcode"]
+			syncRTree.InsertPoint(elem.Lon, elem.Lat, elem.Tags["name"], strings.TrimSpace(address), 0, 0, elem.Tags["website"], elem.Tags["brand"])
 		} else if elem.Type == "way" {
-			syncRTree.InsertPoint(elem.Center.Lon, elem.Center.Lat, elem.Tags["name"], elem.Tags["addr:city"])
+			address := elem.Tags["addr:housenumber"] + " " + elem.Tags["addr:street"] + "\n" + elem.Tags["addr:state"] + " " + elem.Tags["addr:postcode"]
+			syncRTree.InsertPoint(elem.Center.Lon, elem.Center.Lat, elem.Tags["name"], strings.TrimSpace(address), 0, 0, elem.Tags["website"], elem.Tags["brand"])
 		}
 	}
 	return syncRTree, nil

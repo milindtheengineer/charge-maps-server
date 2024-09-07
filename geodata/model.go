@@ -52,10 +52,14 @@ type Supercharger struct {
 }
 
 type LocationData struct {
-	Name string
-	Lat  float64
-	Lon  float64
-	City string
+	Name                   string
+	ShortName              string
+	Lat                    float64
+	Lon                    float64
+	Address                string
+	NumberOfChargingStalls int
+	Power                  int
+	Website                string
 }
 
 type Data struct {

@@ -6,4 +6,5 @@ type Config struct {
 	SuperchargerFilePath string
 	GoogleToken          string
 	SigningKey           string
+	Cors                 []string
 }
