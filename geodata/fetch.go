@@ -26,8 +26,10 @@ func FetchSuperchargerData(dataFile string) (*SyncRTree, error) {
 		return syncRTree, fmt.Errorf("FetchData: %w", err)
 	}
 	for _, elem := range data {
-		address := elem.Address.Street + "\n" + elem.Address.City + " " + elem.Address.State + " " + elem.Address.Zip
-		syncRTree.InsertPoint(elem.Gps.Longitude, elem.Gps.Latitude, "Tesla Supercharger", strings.TrimSpace(address), elem.StallCount, elem.PowerKilowatt, "", "supercharger")
+		if elem.Status == "OPEN" {
+			address := elem.Address.Street + "\n" + elem.Address.City + " " + elem.Address.State + " " + elem.Address.Zip
+			syncRTree.InsertPoint(elem.Gps.Longitude, elem.Gps.Latitude, "Tesla Supercharger", strings.TrimSpace(address), elem.StallCount, elem.PowerKilowatt, "", "supercharger")
+		}
 	}
 	return syncRTree, nil
 }
